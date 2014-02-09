@@ -4,9 +4,10 @@ import syslog
 import time
 import RPi.GPIO as GPIO
 
+# Number of minutes to wait before shutting down
 SHUTDOWN_GRACE = 2
+# Pin connected to power detect line
 POWER_PIN = 17
-time_power_lost = 0
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(POWER_PIN,GPIO.IN)
