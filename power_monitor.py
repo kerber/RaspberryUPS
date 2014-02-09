@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import os
 import syslog
 import time
@@ -12,10 +13,15 @@ GPIO.setup(POWER_PIN,GPIO.IN)
 
 try:
 	POWER_AT_START = GPIO.input(POWER_PIN)
+	if not POWER_AT_START:
+		syslog.syslog("Power detection line isn't connected. Will monitor for connection.")
+		GPIO.wait_for_edge(POWER_PIN, GPIO.RISING)
+		POWER_AT_START = True
+	syslog.syslog("Power status line detected. Monitoring for power interruptions....")
 	while POWER_AT_START:
 		GPIO.wait_for_edge(POWER_PIN, GPIO.FALLING)
 		# The next 2 lines weed out false positives and chatter.
-		os.sleep(1)
+		time.sleep(5)
 		if not GPIO.input(POWER_PIN):
 			out = "Power disconnected. Waiting "+str(SHUTDOWN_GRACE)+" minutes until shutting down."
 			syslog.syslog(syslog.LOG_ALERT, out)
